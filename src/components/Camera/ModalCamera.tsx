@@ -102,20 +102,32 @@ const ModalCamera = ({visible, onClose, onFinish, position}: Props) => {
   }, [image]);
 
   const takePic = useCallback(async () => {
-    const photo = await camera.current?.takeSnapshot({
-      flash: flash,
-      quality: 85,
-      skipMetadata: true,
-    });
-
-    if (photo) {
-      const {path} = photo;
-      const namaFile = path.substr(path.lastIndexOf('/') + 1, path.length);
-      setImage({
-        uri: `file://${path}`,
-        name: namaFile,
-        type: 'image/jpeg',
+    try {
+      const photo = await camera.current?.takeSnapshot({
+        flash: flash,
+        quality: 85,
+        skipMetadata: true,
       });
+
+      if (photo) {
+        const {path} = photo;
+        const namaFile = path.substr(path.lastIndexOf('/') + 1, path.length);
+        setImage({
+          uri: `file://${path}`,
+          name: namaFile,
+          type: 'image/jpeg',
+        });
+      }
+    } catch (err: any) {
+      if (
+        String(err) === '[unknown/unknown]: [unknown/unknown] No flash unit'
+      ) {
+        setFlash('off');
+        myToast('Flash dinonaktifkan');
+        console.log('error Flash: ', err);
+        return;
+      }
+      console.log('error capture: ', String(err));
     }
   }, [camera.current, flash]);
 
