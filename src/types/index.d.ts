@@ -4,3 +4,9 @@ export type CameraTestParamList = {
   CameraLabel: undefined;
   CameraFace: undefined;
 };
+
+export interface ImageObj {
+  name: string;
+  uri: string;
+  type: string;
+}
